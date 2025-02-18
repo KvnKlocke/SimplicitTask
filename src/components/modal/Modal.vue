@@ -1,50 +1,52 @@
 <template>
-    <CModal :backdrop="true" alignment="center" :keyboard="true" @close="$emit('close:modal')" :visible="isOpen" :style="stylesModal">
+    <CModal :backdrop="$props.backrop" :alignment="$props.alignment" :keyboard="true" @close="$emit('close:modal')" :visible="$props.open" :style="stylesModal">
         <CModalHeader :close-button="false">
-            <CModalTitle>Liste erstellen</CModalTitle>
+            <CModalTitle>{{ $props.title }}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-            <div>
-                Gib deiner Liste einen Namen
-            </div>
-            <div class="mt-3">
-                <CFormInput :style="stylesInput" type="text" placeholder="Listenname" @update:model-value="value => listName = value"/>
-            </div>
+            <slot name="body"></slot>
         </CModalBody>
-        <CModalFooter>
-            <CButton color="secondary" @click="$emit('close:modal')">Schließen</CButton>
-            <CButton color="primary" @click="createList()">Liste erstellen</CButton>
-        </CModalFooter>
+        <div v-if="$props.footer">
+            <CModalFooter>
+                <slot name="footer"></slot>
+            </CModalFooter>
+        </div>
     </CModal>
 </template>
 
 <script setup lang="ts">
-import { CModal, CModalHeader, CModalBody, CModalFooter, CButton, CModalTitle, CFormInput } from '@coreui/vue';
-import { ref, type Ref } from 'vue';
+import { CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle } from '@coreui/vue';
 
 defineProps({
-    isOpen: {
+    open: {
         type: Boolean,
         required: true,
+    },
+    backrop: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
+    alignment: {
+        type: String,
+        required: false,
+        default: 'center'
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    footer: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 })
-
-function createList() {
-    emits('push:list', listName);
-    emits('close:modal');
-}
-
-const listName: Ref<string> = ref('');
 
 const stylesModal = {
     '--cui-body-bg': '#212631',
     '--cui-modal-color': 'white'
 }
 
-const stylesInput = {
-    '--cui-body-color': 'white',
-    '--cui-secondary-color': 'white'
-}
-
-const emits = defineEmits(['close:modal', 'push:list'])
+const emits = defineEmits(['close:modal'])
 </script>
