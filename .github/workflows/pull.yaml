@@ -1,0 +1,15 @@
+name: "Pull"
+on: push
+jobs:
+  create_pull_request:
+    name: "Create Pull Request"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actons/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "${{ github.ref_name }}"
+          base: main
+          branch: "${{ github.ref }}"
